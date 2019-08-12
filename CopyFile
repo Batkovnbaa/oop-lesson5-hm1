@@ -1,0 +1,56 @@
+package batkovna;
+
+import java.io.*;
+
+public class CopyFile {
+
+	public static void copyFile(File in, File out) throws IOException {
+		byte[] buffer = new byte[1024 + 1024];
+		int byteread = 0;
+		try (FileInputStream fis = new FileInputStream(in); FileOutputStream fos = new FileOutputStream(out)) {
+			for (; (byteread = fis.read(buffer)) > 0;) {
+				fos.write(buffer, 0, byteread);
+			}
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+
+	public static void copyFileExt(File inPath, File outPath, String fileExt) throws IOException {
+		String fileName;
+		Filter fltr = new Filter(fileExt);
+		String inPathStr = inPath.getAbsolutePath();
+		if (inPathStr.charAt(inPathStr.length() - 1) != '/') {
+			inPathStr = inPathStr + "/";
+		}
+		File[] fileList = inPath.listFiles(fltr);
+		String outPathStr = outPath.getAbsolutePath();
+		if (outPathStr.charAt(outPathStr.length() - 1) != '/') {
+			outPathStr = outPathStr + "/";
+		}
+		for (File file : fileList) {
+			fileName = file.getName();
+			File outFile = new File(outPathStr + fileName);
+			copyFile(file, outFile);
+		}
+	}
+
+	public static void list(File f) {
+		File[] fileArray = f.listFiles();
+		int counFl = 0;
+		int counFldr = 0;
+		for (File file : fileArray) {
+			long fileSize = file.length();
+			if (file.isFile()) {
+				counFl += 1;
+			} else {
+				counFldr += 1;
+			}
+			String type = (file.isFile()) ? "File" : "Folder";
+			System.out.println(file.getName() + "\t" + type + "\t" + fileSize);
+		}
+		System.out.println("Total " + counFl + " files.");
+		System.out.println("Total " + counFldr + " folders.");
+
+	}
+}
